@@ -41,7 +41,7 @@ const getTransactionInfo = async (tx) => {
       chain: response.data.vin.map((vin) => vin.txid),
       len: 1,
     };
-    // if (ancestors[`${tx}`].len > 0)
+
     ancestors[`${tx}`].chain.forEach((txn) => {
       console.log(ancestors);
       if (!ancestors[`${txn}`]) {
