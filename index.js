@@ -27,21 +27,27 @@ const getTransactions = async () => {
   }
 };
 
+
+// call transaction APIs and traverse
 const getTransactionInfo = async (tx) => {
   try {
     const response = await axios.get(`${HOST_URL}tx/${tx}`);
+
+    //check if the txn is part of bloackhash
     if (response.data.status.block_hash !== blockHash) {
       while (ancestors[`${transactions[currIndex]}`]) {
         currIndex++;
-        console.log(currIndex);
       }
       getTransactionInfo(transactions[currIndex]);
     }
+
+    // map to an object
     ancestors[`${tx}`] = {
       chain: response.data.vin.map((vin) => vin.txid),
       len: 1,
     };
 
+    //interate through ins of transactions
     ancestors[`${tx}`].chain.forEach((txn) => {
       console.log(ancestors);
       if (!ancestors[`${txn}`]) {
@@ -61,11 +67,14 @@ const getTransactionInfo = async (tx) => {
   }
 };
 
+//get trancasctions with highest ancestors
 getTransactionWithHighestAncestors = () => {
   ancestors.sort(function (a, b) {
-    return a.len > b.len;
+    return a.len < b.len;
   });
+  return ancestors.slice(0, 10);
 };
+
 const init = async () => {
   await getBlockHash();
   await getTransactions();
